@@ -1,0 +1,57 @@
+\documentclass[12pt, a4paper]{article}
+\usepackage[utf8]{inputenc}
+
+\usepackage[
+	backend=biber,
+	sorting=none,
+	style=ieee,
+	url=false,
+]{biblatex}
+
+\addbibresource{references.bib}
+
+\usepackage{mathtools}
+\usepackage{amsfonts}
+
+\title{COM3028 Systems Verification}
+\author{River Phillips}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{enumerate}
+\item 
+$[|AF AG (p \lor q)|]|_{M1}$
+
+$SAT_{AF}(AG(p \lor q))$
+
+$SAT_{AF}(SAT_{AG}(p \lor q))$
+
+$SAT_{AF}(SAT_{AG}(SAT(p) \cup SAT(q)))$
+
+$SAT_{AF}(SAT_{AG}(\{S_0, S_2\} \cup \{S_3\}))$
+
+$SAT_{AF}(SAT_{AG}(\{S_0, S_2, S_3\}))$
+
+$SAT_{AF}(\neg SAT_{EF}(\neg \{S_0, S_2, S_3\}))$
+
+$SAT_{AF}(\neg SAT_{EF}( \{S_1\}))$
+
+$SAT_{AF}(\neg SAT_{E}(\top \cup \{S_1 \} ))$
+
+$SAT_{AF}(\neg \{S_0, S_1, S_2, S_3 \})$
+
+$SAT_{AF}(\emptyset)$
+
+$\bot$
+
+
+This model does not satisfy $AF AG (p \lor q)$
+
+
+
+\end{enumerate}
+
+\printbibliography[heading=bibintoc, title={References}]
+\end{document}
