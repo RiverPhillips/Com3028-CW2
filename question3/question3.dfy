@@ -1,47 +1,55 @@
-method CheckArr0(A: array<int>) returns (noDuplicates: bool) 
+method CheckArr0(A: array<int>) returns (unique: bool) 
 requires A.Length > 0
-ensures (A.Length == 1 ==> true) || (forall j :: 0 < j < A.Length ==> (A[j] != A[0]))
+ensures unique <==> forall i :: (0 < i < A.Length) ==> A[i] != A[0]
 {
-    noDuplicates := true;
-    if(A.Length > 1) {
-        var i:= 1;
-        while i < A.Length
-        decreases A.Length - i
-        invariant 0 < i <= A.Length{
+    unique := true;
+
+    if A.Length > 1 {
+      var i:= 1;
+
+      while i < A.Length && unique
+      decreases A.Length - i
+      invariant i <= A.Length
+      invariant unique <==> (forall j :: (0 < j < i) ==> A[j] != A[0]) 
+      {
+        assert A.Length > 1;
         if (A[i] == A[0]) {
-            noDuplicates := false;
+            unique := false;
         }
+
         i := i+1;
-        }
-   }
-    return noDuplicates;
-}
-
-method CheckArr1(A: array<int>) returns (noDuplicates: bool)
-requires A.Length > 0 
-ensures (A.Length == 1 ==> true) ||  (forall i, j :: 0 <= i < A.Length && 0 <=j < A.Length ==> j != i ==> (A[i] != A[j])){
-    noDuplicates := true;
-
-    if (A.Length > 1){
-        var i := 0;
-        while(i < A.Length && noDuplicates)
-        decreases A.Length - i
-        invariant 0 <= i <= A.Length
-        {
-
-            var j := i+1;
-            while(j < A.Length && noDuplicates)
-            decreases  A.Length - j
-            invariant i < j <= A.Length
-            {
-                if (A[i] == A[j]) {
-                    noDuplicates := false;                    
-                }
-                j := j+1;
-            }
-            i := i+1;
-        }
+      }
     }
-
-    return noDuplicates;
+   
+    return unique;
 }
+
+// method CheckArr1(A: array<int>) returns (unique: bool)
+// requires A.Length > 0 
+// ensures unique <==> forall i, j :: 0 <= i < A.Length && 0 <= j < A.Length && i != j ==> A[i] != A[j] {
+//     unique := true;
+
+//     if (A.Length > 1){
+//         var i := 0;
+//         while(i < A.Length && unique)
+//         decreases A.Length - i
+//         invariant 0 <= i <= A.Length
+//         {
+
+//             var j := i+1;
+//             while(j < A.Length && unique)
+//             decreases  A.Length - j
+//             invariant i < j <= A.Length
+//             invariant unique <==> forall k, l :: 0 <= k < i && k <= l < j ==> A[k] != A[l]
+//             {
+//                 if (A[i] == A[j]) {
+//                     unique := false;                    
+//                 }
+//                 j := j+1;
+//             }
+//             i := i+1;
+//         }
+//     }
+
+//     return unique;
+// }
