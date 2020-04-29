@@ -177,3 +177,16 @@ ensures unique <==> forall i,j,k :: 0 <= i < M.Length1 && 0 <= j < M.Length1 && 
 
   return unique;
 }
+
+method CheckMatrix(M: array2<int>) returns (unique: bool)
+ensures unique ==> (forall i,j,k :: 0 <= i < M.Length1 && 0 <= j < M.Length1 && 0 <= k < M.Length0 &&  j != i  ==> M[k,i] != M[k,j]) && (forall i,j,k :: 0 <= i < M.Length0 && 0 <= j < M.Length0 && 0 <= k < M.Length1 &&  j != i  ==> M[i,k] != M[j,k]) {
+  var rowsUnique:bool;
+  rowsUnique := CheckRows(M);
+
+  var colsUnique:bool;
+  colsUnique := CheckCols(M);
+
+  unique := colsUnique && rowsUnique;
+
+  return unique;
+}
