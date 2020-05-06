@@ -186,7 +186,5 @@ ensures unique ==> (forall i,j,k :: 0 <= i < M.Length1 && 0 <= j < M.Length1 && 
   var colsUnique:bool;
   colsUnique := CheckCols(M);
 
-  unique := colsUnique && rowsUnique;
-
-  return unique;
+  return colsUnique && rowsUnique;
 }
