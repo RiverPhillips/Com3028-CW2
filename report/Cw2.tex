@@ -49,7 +49,33 @@ $\bot$
 
 This model does not satisfy $AF AG (p \lor q)$
 
+\item TODO
 
+\item
+	\begin{enumerate}
+	\item This Dafny code iterates through a list and ensures that each item is not equal to the item in position 0
+	
+	The loop invariant ensures that all items in a position greater than 0 and less than the current index do not equal the item in position 0.
+	
+	\item This Dafny code iterates through a list and ensures that the current item does not appear in the subsequent indexes in the list.
+	
+	The outer loop invariant ensures that all items less than the current index do not have a duplicate anywhere in the list.
+	
+	The inner loop invariant ensures that there are no duplicates of the current item in a position greater than the outer loop index and less than the inner loop index.
+	
+		
+	\item This method is very similar to the answer to (b) it iterates though the column in position 0 of the array in the same way, ensuring that each item does not have a duplicate in a position greater that it's own in the list.
+	
+	The outer loop invariant ensures that all items less than the current index do not have a duplicate anywhere else in the list.
+	
+	The inner loop invariant ensures there are no duplicates of the current item in a position greater than the current item and less than the inner loop index. 
+	
+	\item These method contains 3 loops nested within each other, the first iterates through either the row or column, for each column or row  it checks that each item is not repeated in a higher position in the row or column.
+	
+	
+	\end{enumerate}
+
+	
 
 \end{enumerate}
 

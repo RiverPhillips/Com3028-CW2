@@ -1,0 +1,22 @@
+MODULE Robot(id, robots, knownFoodSources)
+VAR
+    state: {resting, random_walk, moving_towards_food, scanning_area};
+ASSIGN
+    init(state) := resting
+    next(state) := case
+        state = resting : random_walk
+        state = random_walk : {resting, moving_towards_food}
+        state = moving_towards_food: {scanning_area, moving_towards_food, resting}
+        state = scanning_area : {resting, moving_towards_food}
+        TRUE : state
+    esac;
+
+MODULE FoodSource(id)
+VAR
+    state: {not_found, found}
+ASSIGN
+    init(state) := not_found
+    next(state) := case
+        state = not_found : {found, not_found}
+        TRUE : state
+    esac
