@@ -1,22 +1,51 @@
-MODULE Robot(id, robots, knownFoodSources)
+MODULE Robot(id, FoodSource)
 VAR
+    prevstate: {resting, random_walk, moving_towards_food, scanning_area};
     state: {resting, random_walk, moving_towards_food, scanning_area};
+    food_found: boolean;
 ASSIGN
-    init(state) := resting
-    next(state) := case
-        state = resting : random_walk
-        state = random_walk : {resting, moving_towards_food}
-        state = moving_towards_food: {scanning_area, moving_towards_food, resting}
-        state = scanning_area : {resting, moving_towards_food}
-        TRUE : state
+    init(food_found) := FALSE;
+    next(food_found) := case
+        prevstate = moving_towards_food & state = moving_towards_food: TRUE;
+        TRUE: food_found; 
     esac;
 
-MODULE FoodSource(id)
-VAR
-    state: {not_found, found}
-ASSIGN
-    init(state) := not_found
+    init(prevstate) := resting;
+    next(prevstate) := state;
+
+    init(state) := resting;
     next(state) := case
-        state = not_found : {found, not_found}
-        TRUE : state
-    esac
+        state = resting : random_walk;
+        state = random_walk : {resting, moving_towards_food};
+        state = moving_towards_food: {scanning_area, moving_towards_food, resting};
+        state = scanning_area : {resting, moving_towards_food};
+        TRUE : state;
+    esac;
+
+    next(FoodSource.state) := case
+        prevstate = moving_towards_food & state = moving_towards_food & FoodSource.state != found: found;
+        TRUE: FoodSource.state;
+    esac;
+
+MODULE FoodSource(id, robot1_found, robot2_found, robot3_found, robot4_found, robot5_found)
+VAR
+    state: {not_found, found};
+ASSIGN
+    init(state) := not_found;
+    next(state) := case
+      robot1_found | robot2_found | robot3_found | robot4_found | robot5_found : found;
+      TRUE: state;
+    esac;
+
+MODULE main
+  VAR
+    food_source : process FoodSource(1, robot1.food_found, robot2.food_found, robot3.food_found, robot4.food_found, robot5.food_found);
+    robot1 : process Robot(1, food_source);
+    robot2 : process Robot(2, food_source);
+    robot3 : process Robot(3, food_source);
+    robot4 : process Robot(4, food_source);
+    robot5 : process Robot(5, food_source);
+
+  FAIRNESS running;
+
+  SPEC AG(food_source.state = found -> ((robot1.FoodSource.state = found) &  (robot2.FoodSource.state = found) & (robot3.FoodSource.state = found) &  (robot4.FoodSource.state = found) &  (robot5.FoodSource.state = found)))

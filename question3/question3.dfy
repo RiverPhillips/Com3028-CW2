@@ -12,7 +12,6 @@ ensures unique <==> forall i :: 0 < i < A.Length ==> A[i] != A[0]
       invariant i <= A.Length
       invariant unique <==> (forall j :: (0 < j < i) ==> A[j] != A[0]) 
       {
-        assert A.Length > 1;
         if (A[i] == A[0]) {
             unique := false;
         }
@@ -25,7 +24,6 @@ ensures unique <==> forall i :: 0 < i < A.Length ==> A[i] != A[0]
 }
 
 method CheckArr1(A: array<int>) returns (unique: bool)
-requires A.Length > 0 
 ensures unique <==> forall i, j :: 0 <= i < A.Length && 0 <= j < A.Length && i != j ==> A[i] != A[j] {
     unique := true;
 
