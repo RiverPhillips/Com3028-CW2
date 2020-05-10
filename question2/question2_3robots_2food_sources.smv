@@ -1,0 +1,64 @@
+MODULE Robot(id, FoodSource1, FoodSource2)
+VAR
+    prevstate: {resting, random_walk, moving_towards_food, scanning_area};
+    state: {resting, random_walk, moving_towards_food, scanning_area};
+    food_found: boolean;
+ASSIGN
+    
+
+    init(prevstate) := resting;
+    next(prevstate) := state;
+
+    init(state) := resting;
+    next(state) := case
+        state = resting : random_walk;
+        state = random_walk : {resting, moving_towards_food};
+        state = moving_towards_food: {scanning_area, moving_towards_food, resting};
+        state = scanning_area : {resting, moving_towards_food};
+        TRUE : state;
+    esac;
+
+MODULE FoodSourceController(food_source1, food_source2, robot1, robot2, robot3)
+VAR
+    next_food_source: {0, 1};
+    food_found: boolean;
+ASSIGN
+    init(food_found) := FALSE;
+    next(food_found) := case
+        (robot1.prevstate = moving_towards_food & robot1.state = moving_towards_food) |(robot2.prevstate = moving_towards_food & robot2.state = moving_towards_food) | (robot3.prevstate = moving_towards_food & robot3.state = moving_towards_food): TRUE;
+        food_source1.state = not_found | food_source2.state = not_found : FALSE;
+        TRUE: food_found; 
+    esac;    
+
+    init(next_food_source) := {0,1};
+    next(next_food_source) := case
+        next_food_source = 0 : 1;
+        next_food_source = 1 : 0;
+    esac;
+
+
+
+MODULE FoodSource(id, food_source_controller)
+VAR
+    state: {not_found, found};
+ASSIGN
+    init(state) := not_found;
+    next(state) := case
+      food_source_controller.food_found & food_source_controller.next_food_source = id : found;
+      TRUE: state;
+    esac;
+
+MODULE main
+  VAR
+    food_source_controller: process FoodSourceController(food_source1, food_source2, robot1, robot2, robot3);
+
+    food_source1 : process FoodSource(0, food_source_controller);
+    food_source2: process FoodSource(1, food_source_controller);
+
+    robot1 : process Robot(1, food_source1, food_source2);
+    robot2 : process Robot(2, food_source1, food_source2);
+    robot3 : process Robot(3, food_source1, food_source2);
+  FAIRNESS running;
+
+SPEC AG(food_source1.state = found -> ((robot1.FoodSource1.state = found) &  (robot2.FoodSource1.state = found) & (robot3.FoodSource1.state = found)));
+SPEC AG(food_source2.state = found -> ((robot1.FoodSource2.state = found) &  (robot2.FoodSource2.state = found) & (robot3.FoodSource2.state = found)));
